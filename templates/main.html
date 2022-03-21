@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>테스트용 메인페이지</title>
+</head>
+<body>
+    <form action="/userviewlog/" method="POST">
+        {% csrf_token %}
+
+        <input type="text" name="userid">
+        <input class="btn" value="입력" type="submit">
+    </form>
+</body>
+</html>

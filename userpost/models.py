@@ -1,5 +1,3 @@
-import os.path
-from uuid import uuid4
 
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
@@ -7,25 +5,10 @@ from django.utils import timezone
 from django.db import models
 
 
-# 프로필사진 업로드 설정 함수
-# def profile_img_upload_path(instance, filename):
-#     # 날짜로 세분화
-#     prefix = timezone.now().strftime('%Y/%m/%d')
-#     # 길이 32인 uuid값
-#     file_name = uuid4().hex
-#     # 확장자 추출
-#     extension = os.path.splitext(filename)[-1].lower()
-#     # 파일명 설정
-#     custom_file_name = '/'.join([prefix, file_name, extension])
-#     return custom_file_name
-
-
 # 모델 객체 정의
 class MooyahoUser(AbstractUser):
     # 모델의 DB 기본 정보
     class Meta:
-        app_label = 'user'
-        # 테이블명 설정
         db_table = 'mooyaho_user'
 
     # ('DB에 저장되는 값', 'admin페이지, 폼에서 표시되는 값')
@@ -75,20 +58,7 @@ class MooyahoUser(AbstractUser):
     reason = models.CharField(max_length=2, choices=reason_conf)
 
     # 각 유저 객체가 유저 아이디로 표시되도록 설정
-    def __str__(self):
-        return self.nickname
 
-    # 등산사진 업로드 설정 함수
-    # def hiking_img_upload_path(instance, filename):
-    #     # 날짜로 세분화
-    #     prefix = timezone.now().strftime('%Y/%m/%d')
-    #     # 길이 32인 uuid값
-    #     file_name = uuid4().hex
-    #     # 확장자 추출
-    #     extension = os.path.splitext(filename)[-1].lower()
-    #     # 파일명 설정
-    #     custom_file_name = '/'.join([prefix, file_name, extension])
-    #     return custom_file_name
 
 # 모델 객체 정의
 class Post(models.Model):
@@ -111,8 +81,28 @@ class Post(models.Model):
     likes = models.ManyToManyField(MooyahoUser, related_name='post_likes')
 
     # 각 글 객체가 제목으로 표시되도록 설정
-    def __str__(self):
-        return self.title
+
+class Mountain(models.Model):
+    class Meta:
+        managed = True
+        db_table = 'mountain'
+
+    id = models.BigIntegerField(primary_key=True)
+    mountain_id = models.FloatField(blank=True, null=True)
+    mountain_name = models.CharField(max_length=30, blank=True, null=True)
+    subtitle = models.TextField(blank=True, null=True)
+    height = models.IntegerField(blank=True, null=True)
+    selection_reason = models.TextField(blank=True, null=True)
+    location = models.CharField(max_length=300, blank=True, null=True)
+    detail = models.TextField(blank=True, null=True)
+    course_information = models.TextField(blank=True, null=True)
+    mountain_information = models.TextField(blank=True, null=True)
+    stay = models.TextField(blank=True, null=True)
+    transportation = models.TextField(blank=True, null=True)
+    local_code = models.FloatField(blank=True, null=True)
+    local_name = models.TextField(blank=True, null=True)
+
+
 
 
 

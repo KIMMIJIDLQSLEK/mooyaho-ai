@@ -1,16 +1,15 @@
 from django.db import models
-
-
+from django import forms
 # Create your models here.
-from userpost.models import MooyahoUser,Post
-    # Mountain
+from userpost.models import MooyahoUser,Post,Mountain
 
 
 class UserViewLog(models.Model):
     class Meta:
         db_table = "userviewlog"
 
-        user_id = models.ForeignKey(MooyahoUser, on_delete=models.CASCADE, unique=False)
-        post_id = models.ForeignKey(Post, on_delete=models.CASCADE, unique=False)
-        # mountain_id= models.ForeignKey(Mountain, on_delete=models.CASCADE, unique=False)
-        created_at = models.DateTimeField(auto_now_add=True)
+    user= models.ForeignKey(MooyahoUser, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE,null=True,blank=True)
+    mountain= models.ForeignKey(Mountain, on_delete=models.CASCADE,null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
