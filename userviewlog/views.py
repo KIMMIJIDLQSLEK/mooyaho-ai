@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from userpost.models import MooyahoUser,Mountain,Post
 from .models import UserViewLog
-from django.db.models import Count
+from collections import Counter
 # Create your views here.
-import pandas as pd,csv
-from gensim.models.doc2vec import TaggedDocument
+import pandas as pd
+
 
 # 1. UserViewLog DB에서 user_id가 본 mountain_id 모두 가져온다
 # 2-1.(mountain_id, 개수)로 저장된 mountain_id_list 횟수로 가져온다.
@@ -20,11 +20,11 @@ def bring_mountain_id(user_id):
             user_id=user_id, post_id=i)).count()
         if mountain_count != 0:
             mountain_id_list[i] = mountain_count
-    print(mountain_id_list)
+    # print(mountain_id_list)
 
     #2-2
     mountain_id_list = sorted(mountain_id_list.items(), key=lambda x: x[1], reverse=True)
-    print(mountain_id_list)
+    # print(mountain_id_list)
 
     return mountain_id_list
 
@@ -49,45 +49,58 @@ def bring_mountain_similarity(mountain_id_list,mountain_id_count):
     for count in range(mountain_id_count):
 
         mountain_id=mountain_id_list[count][0]
-        print(mountain_id)
+        # print(mountain_id)
         find_mountain=df.loc[df['mountian_id']==mountain_id]  #https://liveyourit.tistory.com/246
-        print(find_mountain)
+        # print(find_mountain)
 
 
         find_count2=find_mountain['mountian_similarity'].value_counts()  #https://bigdaheta.tistory.com/46
         # print(find_count2)
         find_count1=pd.concat([find_count1,find_count2]) #합치기  #https://yganalyst.github.io/data_handling/Pd_12/
-        print(find_count1)
+        # print(find_count1)
 
     find_count=find_count1.index.value_counts().sort_values(ascending=False) #인덱스의 중복값은 갯수 합치고 갯수기준 내림차순으로 정렬
     #https://koreadatascientist.tistory.com/15
-    print(find_count)
+    # print(find_count)
     list = find_count[:10].index.tolist()
-    print(list)
+    # print(list)
 
     return list
 
 def bring_keyword_similarity(mountain_similarity):
     token_df = []
     for index in mountain_similarity:
-        print(index)
+        # print(index)
         tokens=df[(df['mountian_id']==index)&(df['mountian_similarity']==index)]['mountain_tokens']
-        # tokens=df['mountain_tokens'][index]
-        print(tokens)
+
+        # print(tokens)
+
         token_df.extend(tokens)
 
-    print(token_df)
+    token_list=[]
+    # print(token_df)
 
-    return 1
+    for i in token_df:
+        # print(type(i))
+        token_list.extend(i[1:-1].replace("\'","").split(','))
+
+    # print(token_list)
+    keyword=Counter(token_list).most_common(1)[0][0] #갯수 세고 내림차순 정렬을 Counter가 알아서 해줌
+    # Counter=> https://jsikim1.tistory.com/218
+    # most_common=> https: // dongdongfather.tistory.com / 70
+    # print(keyword)
+
+    return keyword
 
 def userviewlog(request):
     if request.method=='POST':
         user=request.POST.get("userid","")
-        # print(user)  #userid를 request로 받았다고 하자
+        # print(1)
+        print(user)  #userid를 request로 받았다고 하자
 
         # MooyahoUser에서 userid와 같은 객체 가져오기
         user_id=MooyahoUser.objects.get(id=user)
-        # print(user_id)
+        print(user_id)
 
         # 1, 2-1, 2-2
         mountain_id_list=bring_mountain_id(user_id)
@@ -100,7 +113,8 @@ def userviewlog(request):
         #4
         keyword_similarity=bring_keyword_similarity(mountain_similarity)
 
-        # return mountain_list, keyword_list
-        return render(request, 'main.html')
+        print(mountain_similarity, keyword_similarity)
+        return render(request,'main.html')
+
     else:
         return render(request,'main.html')
