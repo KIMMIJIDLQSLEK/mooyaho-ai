@@ -1,4 +1,7 @@
+from django.http import JsonResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+
 from userpost.models import MooyahoUser,Mountain,Post
 from .models import UserViewLog
 from collections import Counter
@@ -45,7 +48,7 @@ df = pd.read_csv('mountain_recommend1.csv')
 def bring_mountain_similarity(mountain_id_list,mountain_id_count):
     #3-3
     find_count1=pd.DataFrame()
-    print(mountain_id_list)
+    # print(mountain_id_list)
     for count in range(mountain_id_count):
 
         mountain_id=mountain_id_list[count][0]
@@ -67,6 +70,7 @@ def bring_mountain_similarity(mountain_id_list,mountain_id_count):
 
     return list
 
+#4. 추천산 10개 리스트를 가져와 keyword하나 가져오는 함수
 def bring_keyword_similarity(mountain_similarity):
     token_df = []
     for index in mountain_similarity:
@@ -92,29 +96,22 @@ def bring_keyword_similarity(mountain_similarity):
 
     return keyword
 
+@csrf_exempt
 def userviewlog(request):
-    if request.method=='POST':
-        user=request.POST.get("userid","")
-        # print(1)
-        print(user)  #userid를 request로 받았다고 하자
+    user=request.POST.get("userid")
 
-        # MooyahoUser에서 userid와 같은 객체 가져오기
-        user_id=MooyahoUser.objects.get(id=user)
-        print(user_id)
+    # MooyahoUser에서 userid와 같은 객체 가져오기
+    user_id=MooyahoUser.objects.get(id=user)
+    print(user_id)
 
-        # 1, 2-1, 2-2
-        mountain_id_list=bring_mountain_id(user_id)
-        # 2-3
-        mountain_id_count=bring_mountian_count(mountain_id_list)
+    # 1, 2-1, 2-2
+    mountain_id_list=bring_mountain_id(user_id)
+    # 2-3
+    mountain_id_count=bring_mountian_count(mountain_id_list)
+    #3
+    mountain_similarity=bring_mountain_similarity(mountain_id_list,mountain_id_count)
+    #4
+    keyword_similarity=bring_keyword_similarity(mountain_similarity)
 
-        #3
-        mountain_similarity=bring_mountain_similarity(mountain_id_list,mountain_id_count)
 
-        #4
-        keyword_similarity=bring_keyword_similarity(mountain_similarity)
-
-        print(mountain_similarity, keyword_similarity)
-        return render(request,'main.html')
-
-    else:
-        return render(request,'main.html')
+    return JsonResponse({'mountain':mountain_similarity,'keyword': keyword_similarity})
