@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
-from .my_settings import MY_SECRET,MY_DATABASE
+from .my_settings import MY_SECRET,MY_DATABASES
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'mooyahoai.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = MY_DATABASE
+DATABASES = MY_DATABASES
 # DATABASES = {
 #     "default": {
 #         "ENGINE": "django.db.backends.sqlite3",
