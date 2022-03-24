@@ -83,7 +83,7 @@ def bring_keyword_similarity(mountain_similarity):
     keyword_list=[]
     keyword=Counter(token_list).most_common(3)
     for index in range(3):
-        keyword_list.append(keyword[index][0])
+        keyword_list.append(keyword[index][0].replace(" ",""))
     # print(keyword_list)
 
     return keyword_list
@@ -102,6 +102,6 @@ def userviewlog(request):
     mountain_similarity=bring_mountain_similarity(mountain_id_list,mountain_id_list_count)
     #4
     keyword_similarity=bring_keyword_similarity(mountain_similarity)
-    # print(f'mountain_similarity:{mountain_similarity}\nkeyword_similarity:{keyword_similarity}')
+    print(f'mountain_similarity:{mountain_similarity}\nkeyword_similarity:{keyword_similarity}')
 
     return JsonResponse({'mountain':mountain_similarity,'keyword': keyword_similarity})
