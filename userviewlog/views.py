@@ -58,6 +58,7 @@ def bring_mountain_similarity(mountain_id_list,mountain_id_list_count):
 
     find_count=find_count.index.value_counts()[:10]
     list = find_count.index.tolist()
+    print(list)
     return list
 
 #4. 추천산 10개 리스트를 가져와 keyword하나 가져오는 함수
@@ -91,17 +92,23 @@ def bring_keyword_similarity(mountain_similarity):
 @csrf_exempt
 def userviewlog(request):
     user=request.POST.get("userid")
+    print(user)
     user_id=MooyahoUser.objects.get(id=user)
     # print(user_id)
 
     # 1, 2-1, 2-2
     mountain_id_list=bring_mountain_id(user_id)
-    # 2-3
-    mountain_id_list_count=bring_mountian_id_count(mountain_id_list)
-    #3
-    mountain_similarity=bring_mountain_similarity(mountain_id_list,mountain_id_list_count)
-    #4
-    keyword_similarity=bring_keyword_similarity(mountain_similarity)
-    print(f'mountain_similarity:{mountain_similarity}\nkeyword_similarity:{keyword_similarity}')
 
-    return JsonResponse({'mountain':mountain_similarity,'keyword': keyword_similarity})
+    if len(mountain_id_list)==0:  #활동로그 없을경우
+        return JsonResponse({'data':0})
+
+    else:       #활동로그 있을경우
+        # 2-3
+        mountain_id_list_count=bring_mountian_id_count(mountain_id_list)
+        #3
+        mountain_similarity=bring_mountain_similarity(mountain_id_list,mountain_id_list_count)
+        #4
+        keyword_similarity=bring_keyword_similarity(mountain_similarity)
+        # print(f'mountain_similarity:{mountain_similarity}\nkeyword_similarity:{keyword_similarity}')
+
+        return JsonResponse({'data':1,'mountain':mountain_similarity,'keyword': keyword_similarity})
