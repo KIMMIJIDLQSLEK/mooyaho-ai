@@ -1,11 +1,9 @@
 from django.http import JsonResponse
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from userpost.models import MooyahoUser,Mountain,Post
+from userpost.models import MooyahoUser
 from .models import UserViewLog
 from collections import Counter
-# Create your views here.
 import pandas as pd
 
 
@@ -58,7 +56,8 @@ def bring_mountain_similarity(mountain_id_list,mountain_id_list_count):
 
     find_count=find_count.index.value_counts()[:10]
     list = find_count.index.tolist()
-    print(list)
+    # print(list)
+
     return list
 
 #4. 추천산 10개 리스트를 가져와 keyword하나 가져오는 함수
@@ -109,6 +108,6 @@ def userviewlog(request):
         mountain_similarity=bring_mountain_similarity(mountain_id_list,mountain_id_list_count)
         #4
         keyword_similarity=bring_keyword_similarity(mountain_similarity)
-        # print(f'mountain_similarity:{mountain_similarity}\nkeyword_similarity:{keyword_similarity}')
+        print(f'mountain_similarity:{mountain_similarity}\nkeyword_similarity:{keyword_similarity}')
 
         return JsonResponse({'data':1,'mountain':mountain_similarity,'keyword': keyword_similarity})
