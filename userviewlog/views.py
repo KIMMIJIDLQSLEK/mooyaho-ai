@@ -25,6 +25,7 @@ def bring_mountain_id(user_id):
 
     #2-2
     mountain_id_list = sorted(mountain_id_list.items(), key=lambda x: x[1], reverse=True)
+    print(mountain_id_list)  #[(산 아이디 , 산의 거론된 횟수)]
 
     return mountain_id_list
 
@@ -38,7 +39,7 @@ def bring_mountian_id_count(mountain_id_list):
 
 #3-1. 벡터화를 이용해 유사한 구하고 csv로 저장
 #3-2. csv 데이터 프레임으로 만들기
-df = pd.read_csv('mountain_recommend1.csv')
+df = pd.read_csv('mountain_recommend.csv')
 
 #3-3. 산의 리스트 돌리면서 각 산과 유사한 산 리스트에 저장하기
 def bring_mountain_similarity(mountain_id_list,mountain_id_list_count):
@@ -51,12 +52,11 @@ def bring_mountain_similarity(mountain_id_list,mountain_id_list_count):
         find_mountain=df.loc[df['mountian_id']==mountain_id]
         # print(f'{mountain_id}인 행 모두 가져오기:\n{find_mountain}')
 
-        find_count_add=find_mountain['mountian_similarity'].value_counts()
-        find_count=pd.concat([find_count,find_count_add])
+        find_count_add=find_mountain['mountian_similarity'].value_counts()  #df의 개수구하기+정렬하는 메소드
+        find_count=pd.concat([find_count,find_count_add])  #유사한 산을 find_count에 추가한다.
 
-    find_count=find_count.index.value_counts()[:10]
-    list = find_count.index.tolist()
-    # print(list)
+    find_count=find_count.index.value_counts()[:10]  #축적된 산의 index의 개수를 구하고 value_count()가 알아서 내림차순으로 정렬해주어 10개만 가져온다.
+    list = find_count.index.tolist()  #10개만 가져온 값의 list를 가져온다.
 
     return list
 
@@ -82,6 +82,8 @@ def bring_keyword_similarity(mountain_similarity):
     #4-3
     keyword_list=[]
     keyword=Counter(token_list).most_common(3)
+    #Counter: list의 갯수 구하고, 갯수에 맞게 정렬해주는 함수
+    #most_common: 상위 3개만 가져온다.
     for index in range(3):
         keyword_list.append(keyword[index][0].replace(" ",""))
     # print(keyword_list)

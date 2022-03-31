@@ -60,7 +60,7 @@ def userpost(request):
         return JsonResponse({'data': 1, 'user':user})
 
     else: #없으므로 게시물에 올리라고 권유
-        print("없음")
+        # print("없음")
         return JsonResponse({'data':0})
 
 
