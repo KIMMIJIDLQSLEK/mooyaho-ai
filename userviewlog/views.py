@@ -12,14 +12,13 @@ import pandas as pd
 # 2-2. 개수기준으로 내림차순으로 정렬
 def bring_mountain_id(user_id):
     mountain_id_list = {} #딕셔너리 형태로 저장
-
     # 1, 2-1
     for i in range(1, 101):
         # mountain db에서, post db에서 user가 본 mountain_id의 개수 가져오기
         # mountain_id: 산 상세페이지에 들어간 산의 id, post_id: 게시물에 써진 산의 id
-        mountain_count = (UserViewLog.objects.filter(user_id=user_id, mountain_id=i) | UserViewLog.objects.filter(
-            user_id=user_id, post_id=i)).count()
-
+        # mountain_count = (UserViewLog.objects.filter(user_id=user_id, mountain_id=i) | UserViewLog.objects.filter(
+        #     user_id=user_id, post=i)).count()
+        mountain_count = (UserViewLog.objects.filter(user_id=user_id,  mountain_id=i)).count()
         if mountain_count != 0:
             mountain_id_list[i] = mountain_count
 
