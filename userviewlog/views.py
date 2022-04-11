@@ -16,15 +16,13 @@ def bring_mountain_id(user_id):
     for i in range(1, 101):
         # mountain db에서, post db에서 user가 본 mountain_id의 개수 가져오기
         # mountain_id: 산 상세페이지에 들어간 산의 id, post_id: 게시물에 써진 산의 id
-        # mountain_count = (UserViewLog.objects.filter(user_id=user_id, mountain_id=i) | UserViewLog.objects.filter(
-        #     user_id=user_id, post=i)).count()
-        mountain_count = (UserViewLog.objects.filter(user_id=user_id,  mountain_id=i)).count()
+        mountain_count = (UserViewLog.objects.filter(user_id=user_id, mountain_id=i) | UserViewLog.objects.filter(
+            user_id=user_id, post_mountain_id=i)).count()
         if mountain_count != 0:
             mountain_id_list[i] = mountain_count
 
     #2-2
     mountain_id_list = sorted(mountain_id_list.items(), key=lambda x: x[1], reverse=True)
-    print(mountain_id_list)  #[(산 아이디 , 산의 거론된 횟수)]
 
     return mountain_id_list
 
@@ -47,10 +45,7 @@ def bring_mountain_similarity(mountain_id_list,mountain_id_list_count):
 
     for count in range(mountain_id_list_count):
         mountain_id=mountain_id_list[count][0]
-        # print(mountain_id)
         find_mountain=df.loc[df['mountian_id']==mountain_id]
-        # print(f'{mountain_id}인 행 모두 가져오기:\n{find_mountain}')
-
         find_count_add=find_mountain['mountian_similarity'].value_counts()  #df의 개수구하기+정렬하는 메소드
         find_count=pd.concat([find_count,find_count_add])  #유사한 산을 find_count에 추가한다.
 
@@ -68,24 +63,18 @@ def bring_keyword_similarity(mountain_similarity):
     token_df = []
     for index in mountain_similarity:
         tokens=df[(df['mountian_id']==index)&(df['mountian_similarity']==index)]['mountain_tokens']
-        # print(f'mountain_id {index}의 tokens: {tokens}')
         token_df.extend(tokens)
-    # print(token_df)
 
     #4-2
     token_list=[]
     for i in token_df:
         token_list.extend(i[1:-1].replace("\'","").split(','))
-    # print(token_list)
 
     #4-3
     keyword_list=[]
     keyword=Counter(token_list).most_common(3)
-    #Counter: list의 갯수 구하고, 갯수에 맞게 정렬해주는 함수
-    #most_common: 상위 3개만 가져온다.
     for index in range(3):
         keyword_list.append(keyword[index][0].replace(" ",""))
-    # print(keyword_list)
 
     return keyword_list
 
@@ -94,7 +83,6 @@ def userviewlog(request):
     user=request.POST.get("userid")
     print(user)
     user_id=MooyahoUser.objects.get(id=user)
-    # print(user_id)
 
     # 1, 2-1, 2-2
     mountain_id_list=bring_mountain_id(user_id)
@@ -109,6 +97,5 @@ def userviewlog(request):
         mountain_similarity=bring_mountain_similarity(mountain_id_list,mountain_id_list_count)
         #4
         keyword_similarity=bring_keyword_similarity(mountain_similarity)
-        print(f'mountain_similarity:{mountain_similarity}\nkeyword_similarity:{keyword_similarity}')
 
         return JsonResponse({'data':1,'mountain':mountain_similarity,'keyword': keyword_similarity})
